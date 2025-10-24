@@ -1,0 +1,271 @@
+PS C:\WINDOWS\system32> $REGION="southamerica-east1"
+PS C:\WINDOWS\system32> $INSTANCE="sitd-postgres"
+PS C:\WINDOWS\system32> $DBNAME="appdb"
+PS C:\WINDOWS\system32> $DBUSER="appuser"
+PS C:\WINDOWS\system32> $DBPASS="apppass123!"
+PS C:\WINDOWS\system32>
+
+PS C:\WINDOWS\system32> gcloud sql instances create $INSTANCE `
+>>   --database-version=POSTGRES_16 `
+>>   --edition=ENTERPRISE `
+>>   --availability-type=zonal `
+>>   --cpu=1 `
+>>   --memory=3840MiB `
+>>   --region=$REGION `
+>>   --storage-size=20GB `
+>>   --storage-auto-increase `
+>>   --backup
+Creating Cloud SQL instance for POSTGRES_16...done.
+Created [https://sqladmin.googleapis.com/sql/v1beta4/projects/sitd-minas/instances/sitd-postgres].
+NAME           DATABASE_VERSION  LOCATION              TIER              PRIMARY_ADDRESS  PRIVATE_ADDRESS  STATUS
+sitd-postgres  POSTGRES_16       southamerica-east1-b  db-custom-1-3840  34.95.246.79     -                RUNNABLE
+PS C:\WINDOWS\system32>
+
+PS C:\WINDOWS\system32> gcloud sql databases create $DBNAME --instance=$INSTANCE
+Creating Cloud SQL database...done.
+Created database [appdb].
+instance: sitd-postgres
+name: appdb
+project: sitd-minas
+PS C:\WINDOWS\system32>
+
+PS C:\WINDOWS\system32> gcloud sql users create $DBUSER `
+>>   --instance=$INSTANCE `
+>>   --password="$DBPASS"
+Creating Cloud SQL user...done.
+Created user [appuser].
+PS C:\WINDOWS\system32>
+PS C:\WINDOWS\system32> gcloud sql instances describe $INSTANCE --format="value(connectionName)"
+sitd-minas:southamerica-east1:sitd-postgres
+PS C:\WINDOWS\system32>
+
+PS C:\WINDOWS\system32> $CONNECTION='sitd-minas:southamerica-east1:sitd-postgres'
+PS C:\WINDOWS\system32> $DBUSER='appuser'
+PS C:\WINDOWS\system32> $DBPASS='apppass123!'
+PS C:\WINDOWS\system32> $DBNAME='appdb'
+PS C:\WINDOWS\system32>
+PS C:\WINDOWS\system32> $DATABASE_URL='postgresql+psycopg2://' + $DBUSER + ':' + $DBPASS + '@/' + $DBNAME + '?host=/cloudsql/' + $CONNECTION
+PS C:\WINDOWS\system32> echo $DATABASE_URL
+postgresql+psycopg2://appuser:apppass123!@/appdb?host=/cloudsql/sitd-minas:southamerica-east1:sitd-postgres
+PS C:\WINDOWS\system32>
+
+PS C:\WINDOWS\system32> $DATABASE_URL | gcloud secrets create DATABASE_URL --data-file=-
+Created version [1] of the secret [DATABASE_URL].
+PS C:\WINDOWS\system32> "dev_super_secreto_cambialo" | gcloud secrets create JWT_SECRET --data-file=-
+Created version [1] of the secret [JWT_SECRET].
+PS C:\WINDOWS\system32>
+
+PS C:\WINDOWS\system32> $REGION = "southamerica-east1"
+PS C:\WINDOWS\system32> $PROJECT_ID = (gcloud config get-value project)
+PS C:\WINDOWS\system32> $PROJECT_NUMBER = (gcloud projects describe $PROJECT_ID --format="value(projectNumber)")
+PS C:\WINDOWS\system32> $SA = "$PROJECT_NUMBER-compute@developer.gserviceaccount.com"   # service account por defecto de Cloud Run
+PS C:\WINDOWS\system32> $REPO = "sitd-docker"
+PS C:\WINDOWS\system32> $IMAGE = "$REGION-docker.pkg.dev/$PROJECT_ID/$REPO/sitd-api:v1"
+PS C:\WINDOWS\system32> $SERVICE = "sitd-api"
+PS C:\WINDOWS\system32> $CONNECTION = "sitd-minas:southamerica-east1:sitd-postgres"
+PS C:\WINDOWS\system32>
+
+PS C:\WINDOWS\system32> gcloud projects add-iam-policy-binding $PROJECT_ID `
+>>   --member="serviceAccount:$SA" `
+>>   --role="roles/cloudsql.client"
+Updated IAM policy for project [sitd-minas].
+bindings:
+- members:
+  - serviceAccount:507389547815@cloudbuild.gserviceaccount.com
+  role: roles/cloudbuild.builds.builder
+- members:
+  - serviceAccount:service-507389547815@gcp-sa-cloudbuild.iam.gserviceaccount.com
+  role: roles/cloudbuild.serviceAgent
+- members:
+  - serviceAccount:507389547815-compute@developer.gserviceaccount.com
+  role: roles/cloudsql.client
+- members:
+  - serviceAccount:service-507389547815@containerregistry.iam.gserviceaccount.com
+  role: roles/containerregistry.ServiceAgent
+- members:
+  - serviceAccount:507389547815-compute@developer.gserviceaccount.com
+  role: roles/editor
+- members:
+  - user:nahuelcouto@gmail.com
+  role: roles/owner
+- members:
+  - serviceAccount:service-507389547815@gcp-sa-pubsub.iam.gserviceaccount.com
+  role: roles/pubsub.serviceAgent
+- members:
+  - serviceAccount:service-507389547815@serverless-robot-prod.iam.gserviceaccount.com
+  role: roles/run.serviceAgent
+etag: BwZB6Urr9g4=
+version: 1
+PS C:\WINDOWS\system32>
+PS C:\WINDOWS\system32> gcloud projects add-iam-policy-binding $PROJECT_ID `
+>>   --member="serviceAccount:$SA" `
+>>   --role="roles/secretmanager.secretAccessor"
+Updated IAM policy for project [sitd-minas].
+bindings:
+- members:
+  - serviceAccount:507389547815@cloudbuild.gserviceaccount.com
+  role: roles/cloudbuild.builds.builder
+- members:
+  - serviceAccount:service-507389547815@gcp-sa-cloudbuild.iam.gserviceaccount.com
+  role: roles/cloudbuild.serviceAgent
+- members:
+  - serviceAccount:507389547815-compute@developer.gserviceaccount.com
+  role: roles/cloudsql.client
+- members:
+  - serviceAccount:service-507389547815@containerregistry.iam.gserviceaccount.com
+  role: roles/containerregistry.ServiceAgent
+- members:
+  - serviceAccount:507389547815-compute@developer.gserviceaccount.com
+  role: roles/editor
+- members:
+  - user:nahuelcouto@gmail.com
+  role: roles/owner
+- members:
+  - serviceAccount:service-507389547815@gcp-sa-pubsub.iam.gserviceaccount.com
+  role: roles/pubsub.serviceAgent
+- members:
+  - serviceAccount:service-507389547815@serverless-robot-prod.iam.gserviceaccount.com
+  role: roles/run.serviceAgent
+- members:
+  - serviceAccount:507389547815-compute@developer.gserviceaccount.com
+  role: roles/secretmanager.secretAccessor
+etag: BwZB6Usi4nM=
+version: 1
+PS C:\WINDOWS\system32>
+
+PS C:\WINDOWS\system32> gcloud artifacts repositories create $REPO `
+>>   --repository-format=docker `
+>>   --location=$REGION
+Create request issued for: [sitd-docker]
+Waiting for operation [projects/sitd-minas/locations/southamerica-east1/operations/eea11d93-1172-44d4-b
+543-c57815d8ae60] to complete...done.
+Created repository [sitd-docker].
+PS C:\WINDOWS\system32>
+
+PS C:\WINDOWS\system32> gcloud auth configure-docker "$REGION-docker.pkg.dev"
+Adding credentials for: southamerica-east1-docker.pkg.dev
+After update, the following will be written to your Docker config file located at
+[C:\Users\Equipo\.docker\config.json]:
+ {
+  "credHelpers": {
+    "southamerica-east1-docker.pkg.dev": "gcloud"
+  }
+}
+
+Do you want to continue (Y/n)?  y
+
+Docker configuration file updated.
+PS C:\WINDOWS\system32>
+
+PS C:\WINDOWS\system32> gcloud builds submit "C:\Users\Equipo\Documents\validacion-stack\api" ` 
+>>   --tag $IMAGE
+
+.
+.
+.
+PS C:\WINDOWS\system32>
+
+PS C:\WINDOWS\system32> gcloud run deploy $SERVICE `
+>>   --image $IMAGE `
+>>   --region $REGION `
+>>   --platform=managed `
+>>   --allow-unauthenticated `
+>>   --add-cloudsql-instances $CONNECTION `
+>>   --set-secrets "DATABASE_URL=DATABASE_URL:latest,JWT_SECRET=JWT_SECRET:latest" `
+>>   --port=8000 `
+>>   --memory=512Mi `
+>>   --cpu=1
+Deploying container to Cloud Run service [sitd-api] in project [sitd-minas] region [southamerica-east1]
+OK Deploying new service... Done.
+  OK Creating Revision...
+  OK Routing traffic...
+  OK Setting IAM Policy...
+Done.
+Service [sitd-api] revision [sitd-api-00001-qvx] has been deployed and is serving 100 percent of traffic.
+Service URL: https://sitd-api-507389547815.southamerica-east1.run.app --chequear con /doc
+PS C:\WINDOWS\system32>
+
+PS C:\WINDOWS\system32> gcloud run services describe $SERVICE --region $REGION --format="yaml(status.conditions)"
+status:
+  conditions:
+  - lastTransitionTime: '2025-10-24T15:46:16.646379Z'
+    status: 'True'
+    type: Ready
+  - lastTransitionTime: '2025-10-24T15:45:00.762468Z'
+    status: 'True'
+    type: ConfigurationsReady
+  - lastTransitionTime: '2025-10-24T15:46:16.609779Z'
+    status: 'True'
+    type: RoutesReady
+PS C:\WINDOWS\system32>
+
+PS C:\WINDOWS\system32> gcloud run services logs read $SERVICE --region $REGION --limit=100
+2025-10-24 15:46:13 [db] SQLAlchemy DSN en uso: postgresql+psycopg2://appuser:apppass123!@/appdb?host=/cloudsql/sitd-minas:southamerica-east1:sitd-postgres
+2025-10-24 15:46:13 INFO:     Started server process [1]
+2025-10-24 15:46:13 INFO:     Waiting for application startup.
+2025-10-24 15:46:14 INFO:     Application startup complete.
+2025-10-24 15:46:14 INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+2025-10-24 15:47:49 GET 404 https://sitd-api-507389547815.southamerica-east1.run.app/
+2025-10-24 15:47:49 INFO:     169.254.169.126:30050 - "GET / HTTP/1.1" 404 Not Found
+2025-10-24 15:47:49 GET 404 https://sitd-api-507389547815.southamerica-east1.run.app/favicon.ico
+2025-10-24 15:47:49 INFO:     169.254.169.126:30066 - "GET /favicon.ico HTTP/1.1" 404 Not Found
+2025-10-24 15:48:03 GET 200 https://sitd-api-507389547815.southamerica-east1.run.app/docs
+2025-10-24 15:48:03 INFO:     169.254.169.126:41744 - "GET /docs HTTP/1.1" 200 OK
+2025-10-24 15:48:04 GET 200 https://sitd-api-507389547815.southamerica-east1.run.app/openapi.json
+2025-10-24 15:48:04 INFO:     169.254.169.126:41754 - "GET /openapi.json HTTP/1.1" 200 OK
+2025-10-24 15:49:46 POST 201 https://sitd-api-507389547815.southamerica-east1.run.app/auth/register
+2025-10-24 15:49:46 INFO:     169.254.169.126:21888 - "POST /auth/register HTTP/1.1" 201 Created
+2025-10-24 15:50:32 POST 200 https://sitd-api-507389547815.southamerica-east1.run.app/auth/token
+2025-10-24 15:50:32 INFO:     169.254.169.126:9414 - "POST /auth/token HTTP/1.1" 200 OK
+2025-10-24 15:50:49 POST 422 https://sitd-api-507389547815.southamerica-east1.run.app/auth/token
+2025-10-24 15:50:49 INFO:     169.254.169.126:22026 - "POST /auth/token HTTP/1.1" 422 Unprocessable Entity
+2025-10-24 15:51:09 POST 200 https://sitd-api-507389547815.southamerica-east1.run.app/auth/token
+2025-10-24 15:51:09 INFO:     169.254.169.126:19058 - "POST /auth/token HTTP/1.1" 200 OK
+2025-10-24 15:51:21 GET 200 https://sitd-api-507389547815.southamerica-east1.run.app/me
+2025-10-24 15:51:21 INFO:     169.254.169.126:41894 - "GET /me HTTP/1.1" 200 OK
+2025-10-24 15:51:27 GET 200 https://sitd-api-507389547815.southamerica-east1.run.app/admin/ping
+2025-10-24 15:51:27 INFO:     169.254.169.126:53028 - "GET /admin/ping HTTP/1.1" 200 OK
+2025-10-24 15:51:36 GET 200 https://sitd-api-507389547815.southamerica-east1.run.app/comercios?page=1&page_size=50
+2025-10-24 15:51:36 INFO:     169.254.169.126:53034 - "GET /comercios?page=1&page_size=50 HTTP/1.1" 200 OK
+2025-10-24 16:06:39 INFO:     Shutting down
+2025-10-24 16:06:39 INFO:     Waiting for application shutdown.
+2025-10-24 16:06:39 INFO:     Application shutdown complete.
+2025-10-24 16:06:39 INFO:     Finished server process [1]
+PS C:\WINDOWS\system32>
+
+PS C:\WINDOWS\system32> gcloud run services logs read $SERVICE --region $REGION
+2025-10-24 15:46:13 [db] SQLAlchemy DSN en uso: postgresql+psycopg2://appuser:apppass123!@/appdb?host=/cloudsql/sitd-minas:southamerica-east1:sitd-postgres
+2025-10-24 15:46:13 INFO:     Started server process [1]
+2025-10-24 15:46:13 INFO:     Waiting for application startup.
+2025-10-24 15:46:14 INFO:     Application startup complete.
+2025-10-24 15:46:14 INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+2025-10-24 15:47:49 GET 404 https://sitd-api-507389547815.southamerica-east1.run.app/
+2025-10-24 15:47:49 INFO:     169.254.169.126:30050 - "GET / HTTP/1.1" 404 Not Found
+2025-10-24 15:47:49 GET 404 https://sitd-api-507389547815.southamerica-east1.run.app/favicon.ico
+2025-10-24 15:47:49 INFO:     169.254.169.126:30066 - "GET /favicon.ico HTTP/1.1" 404 Not Found
+2025-10-24 15:48:03 GET 200 https://sitd-api-507389547815.southamerica-east1.run.app/docs
+2025-10-24 15:48:03 INFO:     169.254.169.126:41744 - "GET /docs HTTP/1.1" 200 OK
+2025-10-24 15:48:04 GET 200 https://sitd-api-507389547815.southamerica-east1.run.app/openapi.json
+2025-10-24 15:48:04 INFO:     169.254.169.126:41754 - "GET /openapi.json HTTP/1.1" 200 OK
+2025-10-24 15:49:46 POST 201 https://sitd-api-507389547815.southamerica-east1.run.app/auth/register
+2025-10-24 15:49:46 INFO:     169.254.169.126:21888 - "POST /auth/register HTTP/1.1" 201 Created
+2025-10-24 15:50:32 POST 200 https://sitd-api-507389547815.southamerica-east1.run.app/auth/token
+2025-10-24 15:50:32 INFO:     169.254.169.126:9414 - "POST /auth/token HTTP/1.1" 200 OK
+2025-10-24 15:50:49 POST 422 https://sitd-api-507389547815.southamerica-east1.run.app/auth/token
+2025-10-24 15:50:49 INFO:     169.254.169.126:22026 - "POST /auth/token HTTP/1.1" 422 Unprocessable Entity
+2025-10-24 15:51:09 POST 200 https://sitd-api-507389547815.southamerica-east1.run.app/auth/token
+2025-10-24 15:51:09 INFO:     169.254.169.126:19058 - "POST /auth/token HTTP/1.1" 200 OK
+2025-10-24 15:51:21 GET 200 https://sitd-api-507389547815.southamerica-east1.run.app/me
+2025-10-24 15:51:21 INFO:     169.254.169.126:41894 - "GET /me HTTP/1.1" 200 OK
+2025-10-24 15:51:27 GET 200 https://sitd-api-507389547815.southamerica-east1.run.app/admin/ping
+2025-10-24 15:51:27 INFO:     169.254.169.126:53028 - "GET /admin/ping HTTP/1.1" 200 OK
+2025-10-24 15:51:36 GET 200 https://sitd-api-507389547815.southamerica-east1.run.app/comercios?page=1&page_size=50
+2025-10-24 15:51:36 INFO:     169.254.169.126:53034 - "GET /comercios?page=1&page_size=50 HTTP/1.1" 200 OK
+2025-10-24 16:06:39 INFO:     Shutting down
+2025-10-24 16:06:39 INFO:     Waiting for application shutdown.
+2025-10-24 16:06:39 INFO:     Application shutdown complete.
+2025-10-24 16:06:39 INFO:     Finished server process [1]
+PS C:\WINDOWS\system32>
+
+PS C:\WINDOWS\system32> start https://sitd-api-507389547815.southamerica-east1.run.app/docs
+PS C:\WINDOWS\system32>
