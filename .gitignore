@@ -1,0 +1,26 @@
+# --- Secretos / entornos ---
+.env
+*.env
+
+# --- Docker ---
+db_data/
+**/node_modules/
+**/__pycache__/
+**/*.py[cod]
+**/*.pyc
+
+# --- Vite/Node ---
+web/node_modules/
+web/dist/
+
+# --- Python ---
+api/.venv/
+api/venv/
+api/.pytest_cache/
+api/.mypy_cache/
+
+# --- Sistema/IDE ---
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
