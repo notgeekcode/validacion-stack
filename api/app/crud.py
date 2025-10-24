@@ -5,7 +5,7 @@ from . import models, schemas
 from .security import hash_password
 
 # ---------- Users ----------
-def create_user(db: Session, data: schemas.UserRegister) -> models.User:
+def create_user(db: Session, data: schemas.UserCreate) -> models.User:
     user = models.User(
         email=data.email,
         hashed_password=hash_password(data.password),
@@ -37,8 +37,8 @@ def list_comercios(db: Session, page: int, page_size: int) -> Tuple[list[models.
 def create_evento(db: Session, data: schemas.EventoCreate) -> models.Evento:
     obj = models.Evento(
         titulo=data.titulo,
-        inicio=data.inicio,
-        fin=data.fin,
+        fecha_inicio=data.fecha_inicio,
+        fecha_fin=data.fecha_fin,
         comercio_id=data.comercio_id,
     )
     db.add(obj)
