@@ -269,3 +269,483 @@ PS C:\WINDOWS\system32>
 
 PS C:\WINDOWS\system32> start https://sitd-api-507389547815.southamerica-east1.run.app/docs
 PS C:\WINDOWS\system32>
+
+PS C:\WINDOWS\system32> gcloud components install beta
+
+Restarting command:
+  $ gcloud components install beta
+  
+PS C:\WINDOWS\system32> gcloud beta run services logs tail $SERVICE --region $REGION
+streaming logs from sitd-minas
+error receiving response: rpc error: code = Internal desc = Internal error encountered.
+PS C:\WINDOWS\system32>
+
+gcloud run services logs read $SERVICE --region $REGION --limit=100
+
+PS C:\WINDOWS\system32> $JOB="sitd-migrate"
+PS C:\WINDOWS\system32>
+PS C:\WINDOWS\system32> gcloud run jobs create $JOB `
+>>   --image $IMAGE `
+>>   --region $REGION `
+>>   --set-cloudsql-instances $CONNECTION `
+>>   --set-secrets "DATABASE_URL=DATABASE_URL:latest,JWT_SECRET=JWT_SECRET:latest" `
+>>   --command "bash" `
+>>   --args "-lc","alembic upgrade head"
+Creating Cloud Run job [sitd-migrate] in project [sitd-minas] region [southamerica-east1]
+OK Creating job... Done.
+Done.
+Job [sitd-migrate] has successfully been created.
+
+To execute this job, use:
+gcloud run jobs execute sitd-migrate
+PS C:\WINDOWS\system32>
+
+To run a command as administrator (user "root"), use "sudo <command>".
+See "man sudo_root" for details.
+
+ubuntu@Nahuel:/mnt/c/WINDOWS/system32$ sudo apt-get update && sudo apt-get install -y curl apt-transport-https ca-certificates gnupg
+curl -fsSL https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo gpg --dearmor -o /usr/share/keyrings/cloud.google.gpg
+echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" | sudo tee /etc/apt/sources.list.d/google-cloud-sdk.list
+sudo apt-get update && sudo apt-get install -y google-cloud-sdk
+[sudo] password for ubuntu:
+Hit:1 http://archive.ubuntu.com/ubuntu noble InRelease
+Get:2 http://security.ubuntu.com/ubuntu noble-security InRelease [126 kB]
+Get:3 http://archive.ubuntu.com/ubuntu noble-updates InRelease [126 kB]
+Get:4 http://security.ubuntu.com/ubuntu noble-security/main amd64 Components [21.6 kB]
+Get:5 http://archive.ubuntu.com/ubuntu noble-backports InRelease [126 kB]
+Get:6 http://security.ubuntu.com/ubuntu noble-security/universe amd64 Components [52.2 kB]
+Get:7 http://security.ubuntu.com/ubuntu noble-security/restricted amd64 Components [212 B]
+Get:8 http://security.ubuntu.com/ubuntu noble-security/multiverse amd64 Components [208 B]
+Get:9 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 Packages [1536 kB]
+Get:10 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 Components [175 kB]
+Get:11 http://archive.ubuntu.com/ubuntu noble-updates/universe amd64 Components [378 kB]
+Get:12 http://archive.ubuntu.com/ubuntu noble-updates/restricted amd64 Components [212 B]
+Get:13 http://archive.ubuntu.com/ubuntu noble-updates/multiverse amd64 Components [940 B]
+Get:14 http://archive.ubuntu.com/ubuntu noble-backports/main amd64 Components [7160 B]
+Get:15 http://archive.ubuntu.com/ubuntu noble-backports/universe amd64 Components [11.0 kB]
+Get:16 http://archive.ubuntu.com/ubuntu noble-backports/restricted amd64 Components [212 B]
+Get:17 http://archive.ubuntu.com/ubuntu noble-backports/multiverse amd64 Components [212 B]
+Fetched 2561 kB in 3s (851 kB/s)
+Reading package lists... Done
+Reading package lists... Done
+Building dependency tree... Done
+Reading state information... Done
+curl is already the newest version (8.5.0-2ubuntu10.6).
+curl set to manually installed.
+ca-certificates is already the newest version (20240203).
+ca-certificates set to manually installed.
+gnupg is already the newest version (2.4.4-2ubuntu17.3).
+gnupg set to manually installed.
+Suggested packages:
+  apt-doc aptitude | synaptic | wajig dpkg-dev powermgmt-base
+The following NEW packages will be installed:
+  apt-transport-https
+The following packages will be upgraded:
+  apt apt-utils libapt-pkg6.0t64
+3 upgraded, 1 newly installed, 0 to remove and 105 not upgraded.
+Need to get 2580 kB of archives.
+After this operation, 47.1 kB of additional disk space will be used.
+Get:1 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 libapt-pkg6.0t64 amd64 2.8.3 [985 kB]
+Get:2 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 apt amd64 2.8.3 [1376 kB]
+Get:3 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 apt-utils amd64 2.8.3 [216 kB]
+Get:4 http://archive.ubuntu.com/ubuntu noble-updates/universe amd64 apt-transport-https all 2.8.3 [3970 B]
+Fetched 2580 kB in 3s (1008 kB/s)
+(Reading database ... 40792 files and directories currently installed.)
+Preparing to unpack .../libapt-pkg6.0t64_2.8.3_amd64.deb ...
+Unpacking libapt-pkg6.0t64:amd64 (2.8.3) over (2.7.14build2) ...
+Setting up libapt-pkg6.0t64:amd64 (2.8.3) ...
+(Reading database ... 40792 files and directories currently installed.)
+Preparing to unpack .../archives/apt_2.8.3_amd64.deb ...
+Unpacking apt (2.8.3) over (2.7.14build2) ...
+Setting up apt (2.8.3) ...
+(Reading database ... 40792 files and directories currently installed.)
+Preparing to unpack .../apt-utils_2.8.3_amd64.deb ...
+Unpacking apt-utils (2.8.3) over (2.7.14build2) ...
+Selecting previously unselected package apt-transport-https.
+Preparing to unpack .../apt-transport-https_2.8.3_all.deb ...
+Unpacking apt-transport-https (2.8.3) ...
+Setting up apt-utils (2.8.3) ...
+Setting up apt-transport-https (2.8.3) ...
+Processing triggers for man-db (2.12.0-4build2) ...
+Processing triggers for libc-bin (2.39-0ubuntu8.6) ...
+deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main
+Hit:1 http://archive.ubuntu.com/ubuntu noble InRelease
+Hit:2 http://archive.ubuntu.com/ubuntu noble-updates InRelease
+Hit:3 http://archive.ubuntu.com/ubuntu noble-backports InRelease
+Get:4 https://packages.cloud.google.com/apt cloud-sdk InRelease [1620 B]
+Get:5 https://packages.cloud.google.com/apt cloud-sdk/main all Packages [1857 kB]
+Get:6 https://packages.cloud.google.com/apt cloud-sdk/main amd64 Packages [4248 kB]
+Hit:7 http://security.ubuntu.com/ubuntu noble-security InRelease
+Fetched 6107 kB in 6s (1007 kB/s)
+Reading package lists... Done
+Reading package lists... Done
+Building dependency tree... Done
+Reading state information... Done
+The following additional packages will be installed:
+  google-cloud-cli google-cloud-cli-anthoscli
+Suggested packages:
+  google-cloud-cli-app-engine-java google-cloud-cli-app-engine-python google-cloud-cli-pubsub-emulator
+  google-cloud-cli-bigtable-emulator google-cloud-cli-datastore-emulator kubectl
+The following NEW packages will be installed:
+  google-cloud-cli google-cloud-cli-anthoscli google-cloud-sdk
+0 upgraded, 3 newly installed, 0 to remove and 105 not upgraded.
+Need to get 163 MB of archives.
+After this operation, 670 MB of additional disk space will be used.
+Get:1 https://packages.cloud.google.com/apt cloud-sdk/main amd64 google-cloud-cli amd64 544.0.0-0 [125 MB]
+Get:2 https://packages.cloud.google.com/apt cloud-sdk/main amd64 google-cloud-cli-anthoscli amd64 544.0.0-0 [37.7 MB]
+Get:3 https://packages.cloud.google.com/apt cloud-sdk/main all google-cloud-sdk all 467.0.0-0 [1706 B]
+Fetched 163 MB in 7s (21.8 MB/s)
+Selecting previously unselected package google-cloud-cli.
+(Reading database ... 40796 files and directories currently installed.)
+Preparing to unpack .../google-cloud-cli_544.0.0-0_amd64.deb ...
+Unpacking google-cloud-cli (544.0.0-0) ...
+Selecting previously unselected package google-cloud-cli-anthoscli.
+Preparing to unpack .../google-cloud-cli-anthoscli_544.0.0-0_amd64.deb ...
+Unpacking google-cloud-cli-anthoscli (544.0.0-0) ...
+Selecting previously unselected package google-cloud-sdk.
+Preparing to unpack .../google-cloud-sdk_467.0.0-0_all.deb ...
+Unpacking google-cloud-sdk (467.0.0-0) ...
+Setting up google-cloud-cli (544.0.0-0) ...
+Setting up google-cloud-sdk (467.0.0-0) ...
+Setting up google-cloud-cli-anthoscli (544.0.0-0) ...
+Processing triggers for man-db (2.12.0-4build2) ...
+Processing triggers for libc-bin (2.39-0ubuntu8.6) ...
+
+ACA ARRANCA CON UBUNTU EN WSL <---------------------------------
+ubuntu@Nahuel:/mnt/c/WINDOWS/system32$ gcloud auth login
+gcloud config set project sitd-minas
+gcloud config set run/region southamerica-east1
+asd^C
+ubuntu@Nahuel:/mnt/c/WINDOWS/system32$ ^C
+ubuntu@Nahuel:/mnt/c/WINDOWS/system32$ gcloud auth login
+Your browser has been opened to visit:
+
+    https://accounts.google.com/o/oauth2/auth?response_type=code&client_id=32555940559.apps.googleusercontent.com&redirect_uri=http%3A%2F%2Flocalhost%3A8085%2F&scope=openid+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.email+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fcloud-platform+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fappengine.admin+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fsqlservice.login+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fcompute+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Faccounts.reauth&state=sjad0BssOhUqgWOOwgP1T7CdyaELtN&access_type=offline&code_challenge=HIoQv4VyRDisSGB8S08o14uXC4tiAoqD6xJLHPJ0dcg&code_challenge_method=S256
+
+gio: https://accounts.google.com/o/oauth2/auth?response_type=code&client_id=32555940559.apps.googleusercontent.com&redirect_uri=http%3A%2F%2Flocalhost%3A8085%2F&scope=openid+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.email+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fcloud-platform+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fappengine.admin+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fsqlservice.login+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fcompute+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Faccounts.reauth&state=sjad0BssOhUqgWOOwgP1T7CdyaELtN&access_type=offline&code_challenge=HIoQv4VyRDisSGB8S08o14uXC4tiAoqD6xJLHPJ0dcg&code_challenge_method=S256: Operation not supported
+
+You are now logged in as [nahuelcouto@gmail.com].
+Your current project is [None].  You can change this setting by running:
+  $ gcloud config set project PROJECT_ID
+ubuntu@Nahuel:/mnt/c/WINDOWS/system32$ gcloud config set project sitd-minas
+Updated property [core/project].
+ubuntu@Nahuel:/mnt/c/WINDOWS/system32$ gcloud config set run/region southamerica-east1
+Updated property [run/region].
+ubuntu@Nahuel:/mnt/c/WINDOWS/system32$ export PROJECT_ID="sitd-minas"
+export REGION="southamerica-east1"
+export JOB="sitd-migrate"
+export INSTANCE="sitd-postgres"
+export CONNECTION="$PROJECT_ID:$REGION:$INSTANCE"
+export IMAGE="southamerica-east1-docker.pkg.dev/$PROJECT_ID/sitd-docker/sitd-api"
+ubuntu@Nahuel:/mnt/c/WINDOWS/system32$ gcloud beta run jobs describe "$JOB" --region "$REGION" \
+  --format="get(template.template.spec.taskTemplate.template.metadata.annotations.[run.googleapis.com/cloudsql-instances])"
+
+ubuntu@Nahuel:/mnt/c/WINDOWS/system32$ gcloud projects add-iam-policy-binding "$PROJECT_ID" \
+  --member="serviceAccount:507389547815-compute@developer.gserviceaccount.com" \
+  --role="roles/cloudsql.client"
+Updated IAM policy for project [sitd-minas].
+bindings:
+- members:
+  - serviceAccount:service-507389547815@gcp-sa-artifactregistry.iam.gserviceaccount.com
+  role: roles/artifactregistry.serviceAgent
+- members:
+  - serviceAccount:507389547815@cloudbuild.gserviceaccount.com
+  role: roles/cloudbuild.builds.builder
+- members:
+  - serviceAccount:service-507389547815@gcp-sa-cloudbuild.iam.gserviceaccount.com
+  role: roles/cloudbuild.serviceAgent
+- members:
+  - serviceAccount:507389547815-compute@developer.gserviceaccount.com
+  role: roles/cloudsql.client
+- members:
+  - serviceAccount:service-507389547815@containerregistry.iam.gserviceaccount.com
+  role: roles/containerregistry.ServiceAgent
+- members:
+  - serviceAccount:507389547815-compute@developer.gserviceaccount.com
+  role: roles/editor
+- members:
+  - user:nahuelcouto@gmail.com
+  role: roles/owner
+- members:
+  - serviceAccount:service-507389547815@gcp-sa-pubsub.iam.gserviceaccount.com
+  role: roles/pubsub.serviceAgent
+- members:
+  - serviceAccount:service-507389547815@serverless-robot-prod.iam.gserviceaccount.com
+  role: roles/run.serviceAgent
+- members:
+  - serviceAccount:507389547815-compute@developer.gserviceaccount.com
+  role: roles/secretmanager.secretAccessor
+etag: BwZB7nviuNw=
+version: 1
+ubuntu@Nahuel:/mnt/c/WINDOWS/system32$ gcloud beta run jobs update "$JOB" --region "$REGION" \
+  --service-account "507389547815-compute@developer.gserviceaccount.com" \
+  --set-cloudsql-instances "$CONNECTION"
+Updating Cloud Run job [sitd-migrate] in project [sitd-minas] region [southamerica-east1]
+✓ Updating job... Done.
+Done.
+Job [sitd-migrate] has successfully been updated.
+
+To execute this job, use:
+gcloud beta run jobs execute sitd-migrate
+ubuntu@Nahuel:/mnt/c/WIgcloud beta run jobs update "$JOB" --region "$REGION" \gion "$REGION" \
+  --command python \
+  --args=-c \
+  --args="import os,sys,time; print('HELLO_FROM_JOB'); print('HAS_CLOUDSQL_DIR', os.path.exists('/cloudsql')); sys.stdout.flush(); time.sleep(1)"
+Updating Cloud Run job [sitd-migrate] in project [sitd-minas] region [southamerica-east1]
+✓ Updating job... Done.
+Done.
+Job [sitd-migrate] has successfully been updated.
+
+To execute this job, use:
+gcloud beta run jobs execute sitd-migrate
+ubuntu@Nahuel:/mnt/c/WINDOWS/system32$ gcloud beta run jobs execute "$JOB" --region "$REGION"
+✓ Creating execution... Done.
+  ✓ Provisioning resources...
+Done.
+Execution [sitd-migrate-prptt] has successfully started running.
+
+View details about this execution by running:
+gcloud beta run jobs executions describe sitd-migrate-prptt
+
+Or visit https://console.cloud.google.com/run/jobs/executions/details/southamerica-east1/sitd-migrate-prptt?project=507389547815
+ubuntu@Nahuel:/mnt/c/WINDOWS/system32$ EXEC=$(gcloud beta run jobs executions list --region "$REGION" --sort-by="~createTime" --format="value(name)" --limit=1)
+echo "$EXEC"
+ubuntu@Nahuel:/mnt/c/WINDOWS/system32$ gcloud beta run jobs executions logs read "$EXEC" --region "$REGION" --limit=200
+ubuntu@Nahuel:/mnt/c/WINDOWS/system32$ gcloud beta run jobs executions logs read "$EXEC" --region "$REGION" --limit=200
+ubuntu@Nahuel:/mnt/c/WINDOWS/system32$ gcloud beta run jobs executions logs read "$EXEC" --region "$REGION" --limit=200
+ubuntu@Nahuel:/mnt/c/WINDOWS/system32$ gcloud beta run jobs executions logs read "$EXEC" --region "$REGION" --limit=200
+ubuntu@Nahuel:/mnt/c/WINDOWS/system32$
+ubuntu@Nahuel:/mnt/c/WINDOWS/system32$
+ubuntu@Nahuel:/mnt/c/WINDOWS/system32$
+ubuntu@Nahuel:/mnt/c/WINDOWS/system32$ gcloud beta run jobs executions logs read "$EXEC" --region "$REGION" --limit=200
+ubuntu@Nahuel:/mnt/c/WINDOWS/system32$ gcloud logging read \executions logs read "$EXEC" --region "$REGION" --limit=200
+  "resource.type=\"cloud_run_job\" AND labels.\"run.googleapis.com/execution_name\"=\"$EXEC\"" \
+  --project "$PROJECT_ID" --limit 200 --freshness="2h" \leapis.com/execution_name\"=\"$EXEC\"" \
+  --format="table(timestamp,severity,labels.\"run.googleapis.com/stream\",textPayload,jsonPayload.message)"
+TIMESTAMP                    SEVERITY  RUN.GOOGLEAPIS.COM/STREAM  TEXT_PAYLOAD               MESSAGEssage)"
+2025-10-24T21:47:28.888367Z  INFO
+ubuntu@Nahuel:/mnt/c/WINDOWS/system32$ gcloud beta run jobs executions describe "$EXEC" --region "$REGION"
+✔ Execution sitd-migrate-prptt in region southamerica-east1 executions describe "$EXEC" --region "$REGION"
+1 task completed successfully
+Elapsed time: 10 seconds
+
+Log URI: https://console.cloud.google.com/logs/viewer?project=sitd-minas&advancedFilter=resource.type%3D%22cloud_run_job%22%0Aresource.labels.job_name%3D%22sitd-migrate%22%0Aresource.labels.location%3D%22southamerica-east1%22%0Alabels.%22run.googleapis.com/execution_name%22%3D%22sitd-migrate-prptt%22
+
+Tasks:           1
+Parallelism:     1
+Container None
+  Image:         southamerica-east1-docker.pkg.dev/sitd-minas/sitd-docker/sitd-api@sha256:2a69680eb9826cd9c22aa9ca64ef252598b95df2669ec6896786295c1fa849bd
+  Command:       python
+  Args:          -c import os sys time; print('HELLO_FROM_JOB'); print('HAS_CLOUDSQL_DIR'  os.path.exists('/cloudsql')); sys.stdout.flush(); time.sleep(1)
+  Memory:        512Mi
+  CPU:           1000m
+  Secrets:
+    DATABASE_URL DATABASE_URL:latest
+    JWT_SECRET   JWT_SECRET:latest
+Task Timeout:    10m
+Max Retries:     3
+Service account: 507389547815-compute@developer.gserviceaccount.com
+SQL connections: sitd-minas:southamerica-east1:sitd-postgres
+ubuntu@Nahuel:/mnt/c/WINDOWS/system32$
+
+# (1) Guarda el último execution name
+EXEC=$(gcloud run jobs executions list \
+  --region "$REGION" \
+  --sort-by="~createTime" \
+  --format="value(name)" \
+  --limit=1)
+echo "Último execution: $EXEC"
+
+# (2) Lee los logs usando la API de Cloud Run
+gcloud beta run jobs executions logs read "$EXEC" \
+  --region "$REGION" \
+  --limit=500
+
+# (3) Si no ves nada útil arriba, lee desde Cloud Logging (más detallado)
+gcloud logging read \
+  "resource.type=\"cloud_run_job\" AND labels.\"run.googleapis.com/execution_name\"=\"$EXEC\"" \
+  --project "$PROJECT_ID" \
+  --limit 300 \
+  --freshness="2h" \
+  --format='value(textPayload)'
+
+EXEC=$(gcloud run jobs executions list \
+  --region "$REGION" --sort-by="~createTime" \
+  --format="value(name)" --limit=1)
+echo "EXEC=$EXEC"
+
+gcloud logging read \
+  "resource.type=\"cloud_run_job\" AND labels.\"run.googleapis.com/execution_name\"=\"$EXEC\"" \
+  --project "$PROJECT_ID" \
+  --limit 300 --freshness="2h" \
+  --format='table(timestamp,severity,labels."run.googleapis.com/stream",textPayload,jsonPayload.message)'
+
+sudo apt-get update && sudo apt-get install -y google-cloud-cli-log-streaming
+gcloud beta run jobs executions logs tail "$EXEC" --region "$REGION"
+
+gcloud run jobs update "$JOB" --region "$REGION" \
+  --command alembic \
+  --args=-c --args=/app/alembic.ini \
+  --args=current \
+  --args=-v
+
+gcloud run jobs execute "$JOB" --region "$REGION"
+EXEC=$(gcloud run jobs executions list --region "$REGION" --sort-by="~createTime" --format="value(name)" --limit=1)
+gcloud logging read \
+  "resource.type=\"cloud_run_job\" AND labels.\"run.googleapis.com/execution_name\"=\"$EXEC\"" \
+  --project "$PROJECT_ID" --limit 200 --freshness="2h" \
+  --format='value(textPayload)'
+
+
+
+--ESTE SIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII
+
+nahuelcouto@cloudshell:~ (sitd-minas)$ gcloud run jobs update "$JOB" --region "$REGION" \
+  --memory 1Gi --cpu 2 --task-timeout 20m \
+  --command /bin/sh --args=-lc \
+  --args 'set -eu
+INST="'"$CONNECTION"'"; SOCK="/cloudsql/${INST}/.s.PGSQL.5432"
+echo "[boot] esperando socket: $SOCK"
+for i in $(seq 1 60); do [ -S "$SOCK" ] && break; sleep 1; done
+
+python - <<PY
+import os, sys, psycopg2
+from alembic.config import Config
+from alembic import command
+
+url = os.getenv("DATABASE_URL")
+if not url:
+    print("[preflight] sin DATABASE_URL"); sys.exit(2)
+
+# preflight
+conn = psycopg2.connect(url, connect_timeout=8)
+conn.close()
+
+cfg = Config("/app/alembic.ini")
+cfg.set_main_option("sqlalchemy.url", url)  # fuerza el DSN de runtime
+print("[alembic] upgrade head...")
+command.upgrade(cfg, "head")
+print("[alembic] DONE")
+PY'
+Updating Cloud Run job [sitd-migrate] in project [sitd-minas] region [southamerica-east1]
+Updating job...                                                                            
+Done.                                                                                      
+Job [sitd-migrate] has successfully been updated.
+
+To execute this job, use:
+gcloud run jobs execute sitd-migrate
+nahuelcouto@cloudshell:~ (sitd-minas)$ gcloud run jobs execute "$JOB" --region "$REGION"
+Creating execution...                                                                      
+  Provisioning resources...done                                                            
+Done.                                                                                      
+Execution [sitd-migrate-bsfwp] has successfully started running.
+
+View details about this execution by running:
+gcloud run jobs executions describe sitd-migrate-bsfwp
+
+Or visit https://console.cloud.google.com/run/jobs/executions/details/southamerica-east1/sitd-migrate-bsfwp?project=507389547815
+nahuelcouto@cloudshell:~ (sitd-minas)$ gcloud run jobs executions describe sitd-migrate-bsfwp
+✔ Execution sitd-migrate-bsfwp in region southamerica-east1
+1 task completed successfully
+Elapsed time: 10 seconds
+ 
+Log URI: https://console.cloud.google.com/logs/viewer?project=sitd-minas&advancedFilter=resource.type%3D%22cloud_run_job%22%0Aresource.labels.job_name%3D%22sitd-migrate%22%0Aresource.labels.location%3D%22southamerica-east1%22%0Alabels.%22run.googleapis.com/execution_name%22%3D%22sitd-migrate-bsfwp%22
+ 
+Tasks:           1
+Parallelism:     1
+Container None
+  Image:         southamerica-east1-docker.pkg.dev/sitd-minas/sitd-docker/sitd-api@sha256:2a69680eb9826cd9c22aa9ca64ef252598b95df2669ec6896786295c1fa849bd
+  Command:       /bin/sh
+  Args:          -lc set -eu
+INST="sitd-minas:southamerica-east1:sitd-postgres"; SOCK="/cloudsql/${INST}/.s.PGSQL.5432"
+echo "[boot] esperando socket: $SOCK"
+for i in $(seq 1 60); do [ -S "$SOCK" ] && break; sleep 1; done
+
+python - <<PY
+import os  sys  psycopg2
+from alembic.config import Config
+from alembic import command
+
+url = os.getenv("DATABASE_URL")
+if not url:
+    print("[preflight] sin DATABASE_URL"); sys.exit(2)
+
+# preflight
+conn = psycopg2.connect(url  connect_timeout=8)
+conn.close()
+
+cfg = Config("/app/alembic.ini")
+cfg.set_main_option("sqlalchemy.url"  url)  # fuerza el DSN de runtime
+print("[alembic] upgrade head...")
+command.upgrade(cfg  "head")
+print("[alembic] DONE")
+PY
+  Memory:        1Gi
+  CPU:           2
+  Secrets:
+    DATABASE_URL DATABASE_URL:latest
+    JWT_SECRET   JWT_SECRET:latest
+Task Timeout:    20m
+Max Retries:     3
+Service account: 507389547815-compute@developer.gserviceaccount.com
+SQL connections: sitd-minas:southamerica-east1:sitd-postgres
+nahuelcouto@cloudshell:~ (sitd-minas)$ 
+
+
+
+nahuelcouto@cloudshell:~ (sitd-minas)$ SERVICE="sitd-api"
+gcloud beta run services logs read "$SERVICE" --region "$REGION" --limit=200
+2025-10-25 23:59:33 [db] SQLAlchemy DSN en uso: postgresql+psycopg2://appuser:apppass123!@/appdb?host=/cloudsql/sitd-minas:southamerica-east1:sitd-postgres
+2025-10-25 23:59:34 INFO:     Started server process [1]
+2025-10-25 23:59:34 INFO:     Waiting for application startup.
+2025-10-25 23:59:34 INFO:     Application startup complete.
+2025-10-25 23:59:34 INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+nahuelcouto@cloudshell:~ (sitd-minas)$ SERVICE="sitd-api"
+
+gcloud run deploy "$SERVICE" \
+  --region "$REGION" \
+  --image "$IMG" \
+  --allow-unauthenticated \
+  --set-cloudsql-instances "$CONNECTION" \
+  --set-secrets "DATABASE_URL=DATABASE_URL:latest,JWT_SECRET=JWT_SECRET:latest" \
+  --min-instances 0 --max-instances 2 \
+  --cpu 1 --memory 512Mi \
+  --port 8080 \
+  --concurrency 80 \
+  --timeout 300s \
+  --command /bin/sh --args=-lc \
+  --args=$'set -euo pipefail
+INST="'"$CONNECTION"'"; SOCK="/cloudsql/${INST}/.s.PGSQL.5432"
+echo "[boot] esperando socket: $SOCK"
+for i in $(seq 1 60); do [ -S "$SOCK" ] && { echo "[boot] socket listo en ${i}s"; break; }; echo "[boot] waiting ${i}s..."; sleep 1; done
+exec uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8080}'
+Deploying container to Cloud Run service [sitd-api] in project [sitd-minas] region [southamerica-east1]
+Deploying...                                                                               
+  Setting IAM Policy...done                                                                
+  Creating Revision...done                                                                 
+  Routing traffic...done                                                                   
+Done.                                                                                      
+Service [sitd-api] revision [sitd-api-00003-6bg] has been deployed and is serving 100 percent of traffic.
+Service URL: https://sitd-api-507389547815.southamerica-east1.run.app
+nahuelcouto@cloudshell:~ (sitd-minas)$ URL=$(gcloud run services describe "$SERVICE" --region "$REGION" --format='value(status.url)')
+echo "API URL: $URL"
+
+curl -I "$URL"
+curl -I "$URL/openapi.json" || true
+# y abrí $URL/docs en el navegador
+API URL: https://sitd-api-mcf47jn65a-rj.a.run.app
+HTTP/2 404 
+content-type: application/json
+x-cloud-trace-context: efac8a1c0f056fc69a4b1fdb8cf95c34;o=1
+content-length: 22
+date: Sun, 26 Oct 2025 00:09:52 GMT
+server: Google Frontend
+
+HTTP/2 200 
+content-type: application/json
+x-cloud-trace-context: d580e467ae1d7947254cfa0482829290
+content-length: 7462
+date: Sun, 26 Oct 2025 00:09:53 GMT
+server: Google Frontend
+
+nahuelcouto@cloudshell:~ (sitd-minas)$ 
