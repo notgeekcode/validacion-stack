@@ -1,9 +1,11 @@
 # api/app/main.py
 from typing import List
+from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Depends, HTTPException, status, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordRequestForm
+from sqlalchemy import text
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 
@@ -22,19 +24,44 @@ from .security import (
     require_role,
 )
 from . import crud, schemas
+import os
+import logging
 
-app = FastAPI(title="SITD API", version="0.1.0")
 
-# --- CORS (ajustá si necesitás más orígenes) ---
+# ---------- Lifespan: chequeo liviano de DB al iniciar (no crea tablas) ----------
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    try:
+        with engine.connect() as conn:
+            conn.execute(text("select 1"))
+        logging.info("[startup] DB check OK")
+    except Exception as e:
+        # No rompemos el arranque: solo avisamos.
+        logging.warning("[startup] DB check FAILED: %s", e)
+    yield
+
+
+app = FastAPI(title="SITD API", version="0.1.0", lifespan=lifespan)
+
+# ---------- CORS ----------
+FRONTEND_ORIGINS = [
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+]
+# Agregá tu URL pública si ya la tenés (ejemplo):
+PUBLIC_API = os.getenv("PUBLIC_API_ORIGIN")  # p.ej. https://sitd-api-xxxxx.a.run.app
+if PUBLIC_API:
+    FRONTEND_ORIGINS.append(PUBLIC_API)
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],
+    allow_origins=FRONTEND_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# --- Dependencia de DB por request ---
+# ---------- Dependencia de DB por request ----------
 def get_db():
     db = SessionLocal()
     try:
@@ -42,18 +69,23 @@ def get_db():
     finally:
         db.close()
 
-# --- Crear tablas al iniciar ---
-@app.on_event("startup")
-def on_startup():
-    Base.metadata.create_all(bind=engine)
+# ⚠️ IMPORTANTE:
+# En producción usamos Alembic. Por eso NO hacemos Base.metadata.create_all()
+# para evitar desincronizar migraciones. Si lo querés sólo en dev local, poné
+# CREATE_TABLES_ON_STARTUP=1 en tu .env local.
+if os.getenv("CREATE_TABLES_ON_STARTUP") == "1":
+    @app.on_event("startup")
+    def _create_all_for_dev_only():
+        Base.metadata.create_all(bind=engine)
+        logging.info("[startup] Base.metadata.create_all() ejecutado (DEV).")
+
 
 # ---------------------------
-#         AUTH
+#            AUTH
 # ---------------------------
 
 @app.post("/auth/register", response_model=UserRead, status_code=status.HTTP_201_CREATED)
 def register(payload: UserCreate, db: Session = Depends(get_db)):
-    # pydantic valida email; limitamos password a 72 bytes por compatibilidad
     if len(payload.password.encode("utf-8")) > 72:
         raise HTTPException(
             status_code=400,
@@ -74,6 +106,7 @@ def register(payload: UserCreate, db: Session = Depends(get_db)):
     db.refresh(user)
     return user
 
+
 @app.post("/auth/token", response_model=Token)
 def login(form: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
     email = (form.username or "").lower()
@@ -83,8 +116,9 @@ def login(form: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get
     access_token = create_access_token(subject=user.email, role=user.role)
     return Token(access_token=access_token)
 
+
 # ---------------------------
-#     Rutas protegidas
+#       Rutas protegidas
 # ---------------------------
 
 @app.get("/me", response_model=UserRead)
@@ -95,8 +129,9 @@ def read_me(current_user: User = Depends(get_current_user)):
 def admin_ping(_: User = Depends(require_role("admin"))):
     return {"ok": True, "msg": "pong from admin"}
 
+
 # ---------------------------
-#     Comercios (público)
+#   Comercios (público)
 # ---------------------------
 
 @app.get("/comercios", response_model=List[ComercioRead])
@@ -112,8 +147,9 @@ def listar_comercios(
 def crear_comercio(data: ComercioCreate, db: Session = Depends(get_db)):
     return crud.create_comercio(db, data)
 
+
 # ---------------------------
-#       Eventos (público)
+#     Eventos (público)
 # ---------------------------
 
 @app.get("/eventos", response_model=List[EventoRead])
@@ -128,3 +164,17 @@ def listar_eventos(
 @app.post("/eventos", response_model=EventoRead, status_code=status.HTTP_201_CREATED)
 def crear_evento(data: EventoCreate, db: Session = Depends(get_db)):
     return crud.create_evento(db, data)
+
+
+# ---------------------------
+#   Salud / observabilidad
+# ---------------------------
+
+@app.get("/healthz")
+def healthz(db: Session = Depends(get_db)):
+    # Health simple que también “toca” la DB
+    try:
+        db.execute(text("select 1"))
+        return {"ok": True, "db": "up"}
+    except Exception as e:
+        return {"ok": False, "db": f"error: {e.__class__.__name__}"}
