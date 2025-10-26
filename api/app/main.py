@@ -5,6 +5,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI, Depends, HTTPException, status, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordRequestForm
+from fastapi.responses import RedirectResponse, JSONResponse
 from sqlalchemy import text
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
@@ -28,7 +29,7 @@ import os
 import logging
 
 
-# ---------- Lifespan: chequeo liviano de DB al iniciar (no crea tablas) ----------
+# ---------- Lifespan: chequeo liviano de DB al iniciar ----------
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     try:
@@ -36,18 +37,20 @@ async def lifespan(app: FastAPI):
             conn.execute(text("select 1"))
         logging.info("[startup] DB check OK")
     except Exception as e:
-        # No rompemos el arranque: solo avisamos.
         logging.warning("[startup] DB check FAILED: %s", e)
     yield
 
 
+# ---------- Instancia principal ----------
 app = FastAPI(title="SITD API", version="0.1.0", lifespan=lifespan)
+
 
 # ---------- CORS ----------
 FRONTEND_ORIGINS = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
 ]
+
 # Agregá tu URL pública si ya la tenés (ejemplo):
 PUBLIC_API = os.getenv("PUBLIC_API_ORIGIN")  # p.ej. https://sitd-api-xxxxx.a.run.app
 if PUBLIC_API:
@@ -61,6 +64,13 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
+# ---------- Ruta raíz (para evitar 404 en "/") ----------
+@app.get("/", include_in_schema=False)
+def root():
+    return RedirectResponse(url="/docs")
+
+
 # ---------- Dependencia de DB por request ----------
 def get_db():
     db = SessionLocal()
@@ -69,10 +79,8 @@ def get_db():
     finally:
         db.close()
 
-# ⚠️ IMPORTANTE:
-# En producción usamos Alembic. Por eso NO hacemos Base.metadata.create_all()
-# para evitar desincronizar migraciones. Si lo querés sólo en dev local, poné
-# CREATE_TABLES_ON_STARTUP=1 en tu .env local.
+
+# ---------- Creación de tablas en DEV ----------
 if os.getenv("CREATE_TABLES_ON_STARTUP") == "1":
     @app.on_event("startup")
     def _create_all_for_dev_only():
@@ -125,6 +133,7 @@ def login(form: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get
 def read_me(current_user: User = Depends(get_current_user)):
     return current_user
 
+
 @app.get("/admin/ping")
 def admin_ping(_: User = Depends(require_role("admin"))):
     return {"ok": True, "msg": "pong from admin"}
@@ -142,6 +151,7 @@ def listar_comercios(
 ):
     items, _total = crud.list_comercios(db, page, page_size)
     return items
+
 
 @app.post("/comercios", response_model=ComercioRead, status_code=status.HTTP_201_CREATED)
 def crear_comercio(data: ComercioCreate, db: Session = Depends(get_db)):
@@ -161,6 +171,7 @@ def listar_eventos(
     items, _total = crud.list_eventos(db, page, page_size)
     return items
 
+
 @app.post("/eventos", response_model=EventoRead, status_code=status.HTTP_201_CREATED)
 def crear_evento(data: EventoCreate, db: Session = Depends(get_db)):
     return crud.create_evento(db, data)
@@ -170,7 +181,7 @@ def crear_evento(data: EventoCreate, db: Session = Depends(get_db)):
 #   Salud / observabilidad
 # ---------------------------
 
-@app.get("/healthz")
+@app.get("/healthz", summary="Healthz")
 def healthz(db: Session = Depends(get_db)):
     try:
         db.execute(text("select 1"))
@@ -178,12 +189,11 @@ def healthz(db: Session = Depends(get_db)):
     except Exception as e:
         return {"ok": False, "db": f"error: {e.__class__.__name__}"}
 
-# Endpoint alternativo (por si alguna capa intermedia “toca” /healthz)
-@app.get("/__health")
+
+@app.get("/__health", summary="Underscore Health")
 def underscore_health(db: Session = Depends(get_db)):
     try:
         db.execute(text("select 1"))
         return {"ok": True, "db": "up"}
     except Exception as e:
         return {"ok": False, "db": f"error: {e.__class__.__name__}"}
-

@@ -5,21 +5,20 @@ FROM python:3.12-slim
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1
 
+# Carpeta de trabajo
 WORKDIR /app
 
-# (Opcional) curl sólo si lo usás en runtime; si no, podés borrar esta línea
-RUN apt-get update && apt-get install -y --no-install-recommends curl && \
-    rm -rf /var/lib/apt/lists/*
-
+# Copiar dependencias e instalarlas
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
+# Copiar el resto del código fuente
 COPY alembic.ini .
 COPY migrations ./migrations
 COPY app ./app
 
-# Cloud Run inyecta PORT; exponemos 8080 por convención
+# Cloud Run inyecta PORT dinámicamente (usamos 8080 por convención)
 EXPOSE 8080
 
-# Respetar $PORT (default 8080 para local)
+# Iniciar Uvicorn respetando PORT (por defecto 8080)
 CMD ["sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8080}"]
