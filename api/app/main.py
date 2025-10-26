@@ -172,9 +172,18 @@ def crear_evento(data: EventoCreate, db: Session = Depends(get_db)):
 
 @app.get("/healthz")
 def healthz(db: Session = Depends(get_db)):
-    # Health simple que también “toca” la DB
     try:
         db.execute(text("select 1"))
         return {"ok": True, "db": "up"}
     except Exception as e:
         return {"ok": False, "db": f"error: {e.__class__.__name__}"}
+
+# Endpoint alternativo (por si alguna capa intermedia “toca” /healthz)
+@app.get("/__health")
+def underscore_health(db: Session = Depends(get_db)):
+    try:
+        db.execute(text("select 1"))
+        return {"ok": True, "db": "up"}
+    except Exception as e:
+        return {"ok": False, "db": f"error: {e.__class__.__name__}"}
+
