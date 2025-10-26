@@ -7,18 +7,19 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 
 WORKDIR /app
 
-# Sistema base (opcional: para compilar deps nativas si hiciera falta)
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential curl && \
+# (Opcional) curl sólo si lo usás en runtime; si no, podés borrar esta línea
+RUN apt-get update && apt-get install -y --no-install-recommends curl && \
     rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
+
 COPY alembic.ini .
 COPY migrations ./migrations
 COPY app ./app
 
-EXPOSE 8000
+# Cloud Run inyecta PORT; exponemos 8080 por convención
+EXPOSE 8080
 
-# Uvicorn
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Respetar $PORT (default 8080 para local)
+CMD ["sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8080}"]
