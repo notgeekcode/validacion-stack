@@ -1,0 +1,144 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 140 20% 15%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 140 20% 15%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 140 20% 15%;
+
+    /* Verde sierras - color principal */
+    --primary: 140 45% 42%;
+    --primary-foreground: 0 0% 100%;
+    --primary-light: 140 40% 55%;
+    --primary-dark: 140 50% 32%;
+
+    /* Beige tierra - secundario */
+    --secondary: 35 35% 82%;
+    --secondary-foreground: 140 20% 15%;
+    --secondary-dark: 35 30% 65%;
+
+    --muted: 35 20% 94%;
+    --muted-foreground: 140 15% 45%;
+
+    /* Azul cielo - acento */
+    --accent: 200 65% 68%;
+    --accent-foreground: 0 0% 100%;
+    --accent-dark: 200 60% 52%;
+
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 35 20% 88%;
+    --input: 35 20% 88%;
+    --ring: 140 45% 42%;
+
+    --radius: 0.75rem;
+
+    /* Gradientes */
+    --gradient-hero: linear-gradient(135deg, hsl(140 45% 42%) 0%, hsl(140 50% 32%) 100%);
+    --gradient-accent: linear-gradient(120deg, hsl(200 65% 68%) 0%, hsl(200 60% 52%) 100%);
+    --gradient-overlay: linear-gradient(180deg, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.1) 100%);
+
+    /* Sombras */
+    --shadow-soft: 0 2px 8px rgba(0, 0, 0, 0.08);
+    --shadow-medium: 0 4px 16px rgba(0, 0, 0, 0.12);
+    --shadow-strong: 0 8px 32px rgba(0, 0, 0, 0.16);
+
+    /* Transiciones */
+    --transition-base: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-slow: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .dark {
+    --background: 140 15% 8%;
+    --foreground: 35 20% 94%;
+
+    --card: 140 12% 12%;
+    --card-foreground: 35 20% 94%;
+
+    --popover: 140 12% 12%;
+    --popover-foreground: 35 20% 94%;
+
+    --primary: 140 40% 55%;
+    --primary-foreground: 140 15% 8%;
+    --primary-light: 140 45% 65%;
+    --primary-dark: 140 50% 42%;
+
+    --secondary: 35 25% 25%;
+    --secondary-foreground: 35 20% 94%;
+    --secondary-dark: 35 20% 18%;
+
+    --muted: 140 10% 18%;
+    --muted-foreground: 35 15% 65%;
+
+    --accent: 200 60% 58%;
+    --accent-foreground: 140 15% 8%;
+    --accent-dark: 200 55% 45%;
+
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 140 10% 22%;
+    --input: 140 10% 22%;
+    --ring: 140 40% 55%;
+
+    --gradient-hero: linear-gradient(135deg, hsl(140 40% 55%) 0%, hsl(140 50% 42%) 100%);
+    --gradient-accent: linear-gradient(120deg, hsl(200 60% 58%) 0%, hsl(200 55% 45%) 100%);
+    --gradient-overlay: linear-gradient(180deg, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.3) 100%);
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-semibold tracking-tight;
+  }
+}
+
+@layer utilities {
+  .gradient-hero {
+    background: var(--gradient-hero);
+  }
+  
+  .gradient-accent {
+    background: var(--gradient-accent);
+  }
+
+  .shadow-soft {
+    box-shadow: var(--shadow-soft);
+  }
+
+  .shadow-medium {
+    box-shadow: var(--shadow-medium);
+  }
+
+  .shadow-strong {
+    box-shadow: var(--shadow-strong);
+  }
+
+  .transition-base {
+    transition: var(--transition-base);
+  }
+
+  .transition-slow {
+    transition: var(--transition-slow);
+  }
+}
