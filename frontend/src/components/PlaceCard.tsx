@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+/*import { Link } from "react-router-dom";
 import { MapPin, Star } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -50,4 +50,40 @@ export const PlaceCard = ({ id, name, category, location, zone, rating, image, i
       </Card>
     </Link>
   );
+};*/
+
+import React from "react";
+
+type Props = {
+  title: string;
+  imageUrl: string;
+  subtitle?: string;
+  badge?: string;
 };
+
+export default function PlaceCard({ title, imageUrl, subtitle, badge }: Props) {
+  return (
+    <article className="group overflow-hidden rounded-2xl border bg-white shadow-soft transition-shadow duration-300 hover:shadow-lg">
+      <div className="relative aspect-[16/10] overflow-hidden">
+        <img
+          src={imageUrl}
+          alt={title}
+          className="h-full w-full object-cover transition-transform duration-700 ease-soft will-change-transform group-hover:scale-[1.04]"
+        />
+        {badge && (
+          <span className="absolute left-3 top-3 rounded-full bg-black/70 px-3 py-1 text-xs font-medium text-white backdrop-blur">
+            {badge}
+          </span>
+        )}
+      </div>
+      <div className="p-4">
+        <h3 className="line-clamp-1 text-lg font-semibold text-gray-900">
+          {title}
+        </h3>
+        {subtitle && (
+          <p className="mt-1 line-clamp-2 text-sm text-gray-600">{subtitle}</p>
+        )}
+      </div>
+    </article>
+  );
+}

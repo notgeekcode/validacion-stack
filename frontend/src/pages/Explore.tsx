@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
-import { PlaceCard } from "@/components/PlaceCard";
+import PlaceCard from "@/components/PlaceCard";
 import { FilterPanel } from "@/components/FilterPanel";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -9,6 +9,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Search, MapIcon, Grid3x3 } from "lucide-react";
 import { usePlaces } from "@/hooks/usePlaces";
 import { FilterOptions } from "@/lib/types";
+
+const PLACEHOLDER = "https://via.placeholder.com/1200x800?text=Lavalleja";
 
 const Explore = () => {
   const [filters, setFilters] = useState<FilterOptions>({});
@@ -21,10 +23,13 @@ const Explore = () => {
     setFilters({ ...filters, searchQuery });
   };
 
+  // Helper para resolver imagen principal sin romper TS
+  const firstImage = (arr?: string[]) => (arr && arr.length > 0 ? arr[0] : PLACEHOLDER);
+
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
-      
+
       <main className="flex-1 container mx-auto px-4 py-8">
         <div className="mb-8">
           <h1 className="text-4xl font-bold mb-2">Explorar</h1>
@@ -47,9 +52,7 @@ const Explore = () => {
                 onKeyDown={(e) => e.key === "Enter" && handleSearch()}
               />
             </div>
-            <Button onClick={handleSearch}>
-              Buscar
-            </Button>
+            <Button onClick={handleSearch}>Buscar</Button>
           </div>
         </div>
 
@@ -113,7 +116,13 @@ const Explore = () => {
             ) : places && places.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {places.map((place) => (
-                  <PlaceCard key={place.id} {...place} />
+                  <PlaceCard
+                    key={place.id}
+                    title={place.name}
+                    imageUrl={firstImage(place.images)}
+                    subtitle={place.zone || place.address || ""}
+                    badge={place.category || ""}
+                  />
                 ))}
               </div>
             ) : (
